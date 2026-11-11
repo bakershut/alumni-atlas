@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alumni Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F6F5;--surface:#FFFFFF;--ink:#0F2420;--muted:#586C67;--line:#D3DFDC;
+  --accent:#0F766E;--accent-ink:#FFFFFF;--pop:#FF6B4A;--soft:#DDF1EE;--ok:#1F8F4E;--warn:#C2410C;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#0B1715;--surface:#12251F;--ink:#E6F4F1;--muted:#93ADA7;--line:#24413A;--accent:#35C2B3;--accent-ink:#06211D;--pop:#FF8A6E;--soft:#17332D;--ok:#4CD08A;--warn:#FF9A62}
+}
+:root[data-theme="dark"]{--bg:#0B1715;--surface:#12251F;--ink:#E6F4F1;--muted:#93ADA7;--line:#24413A;--accent:#35C2B3;--accent-ink:#06211D;--pop:#FF8A6E;--soft:#17332D;--ok:#4CD08A;--warn:#FF9A62}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 Figtree,system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3{font-family:Sora,Figtree,system-ui,sans-serif;margin:0;letter-spacing:-.015em}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--pop);outline-offset:2px}
+.wrap{max-width:1150px;margin:0 auto;padding:18px 16px 56px}
+header{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:flex-end;margin-bottom:16px}
+.logo{display:flex;align-items:center;gap:10px}
+.pin{width:38px;height:38px;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);background:var(--accent);display:grid;place-items:center}
+.pin::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--pop)}
+h1{font-size:clamp(26px,5vw,36px);font-weight:800}
+.sub{color:var(--muted);margin:2px 0 0}
+.btn{border:1px solid var(--line);background:var(--surface);padding:8px 14px;border-radius:9px;cursor:pointer;font-weight:600}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.small{padding:5px 10px;font-size:13px}
+.tabs{display:flex;gap:6px;margin-bottom:14px}
+.tab{padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:600}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tab b{background:var(--pop);color:#fff;border-radius:999px;padding:0 7px;margin-left:6px;font-size:12px}
+.filters{display:grid;grid-template-columns:2fr repeat(5,1fr);gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%;min-width:0}
+textarea{resize:vertical;line-height:1.5}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;color:var(--muted)}
+.bar label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.bar input{width:auto}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 10px;font-size:13px;cursor:pointer}
+.chip:hover,.chip.on{background:var(--soft);border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.top{display:flex;gap:10px;align-items:center}
+.av{width:44px;height:44px;border-radius:12px;background:var(--soft);color:var(--accent);display:grid;place-items:center;font:700 16px Sora,sans-serif;flex:none}
+.card h3{font-size:16px}
+.role{color:var(--muted);font-size:14px}
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:1px 8px;font-size:12.5px;color:var(--muted)}
+.tag.open{background:var(--soft);color:var(--ok);border-color:transparent;font-weight:600}
+.tag.done{color:var(--warn)}
+.card .btn{margin-top:auto}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px 10px;background:var(--surface);border:1px dashed var(--line);border-radius:14px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.stat b{display:block;font:800 26px Sora,sans-serif}.stat span{color:var(--muted);font-size:13px}
+.log{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;display:grid;grid-template-columns:1.4fr 150px 1.4fr auto;gap:10px;align-items:center}
+.log h3{font-size:15px}.log .meta{color:var(--muted);font-size:13px}
+.flag{color:var(--warn);font-weight:700;font-size:13px}
+.modal{position:fixed;inset:0;background:rgba(5,15,13,.6);display:grid;place-items:center;padding:16px;z-index:30;overflow:auto}
+.modal[hidden]{display:none}
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:16px;width:100%;max-width:640px;padding:18px;max-height:calc(100vh - 32px);overflow:auto}
+.sheet h2{font-size:20px;margin-bottom:2px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.sheet label{font-size:13px;color:var(--muted);display:block;margin-bottom:3px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:40}
+@media (max-width:900px){.filters{grid-template-columns:1fr 1fr}.filters input:first-child{grid-column:1/-1}.log{grid-template-columns:1fr}.chips{margin-left:0}}
+@media (max-width:520px){.two{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><span class="pin" aria-hidden="true"></span>
+      <div><h1>Alumni Atlas</h1><p class="sub">Find seniors at your dream companies and ask for referrals the right way.</p></div>
+    </div>
+    <button class="btn" id="theme">Switch theme</button>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="t-dir" aria-selected="true">Find alumni</button>
+    <button class="tab" role="tab" id="t-trk" aria-selected="false">My tracker<b id="cnt">0</b></button>
+  </div>
+
+  <section id="dir">
+    <div class="filters">
+      <input id="q" type="search" placeholder="Search name, company, role or city" aria-label="Search">
+      <select id="fc" aria-label="Company"></select>
+      <select id="fr" aria-label="Role"></select>
+      <select id="fy" aria-label="City"></select>
+      <select id="fb" aria-label="Branch"></select>
+      <select id="fa" aria-label="Batch"></select>
+    </div>
+    <div class="bar">
+      <label><input type="checkbox" id="fo"> Open to referrals only</label>
+      <span id="res"></span>
+      <button class="btn small" id="clear">Clear filters</button>
+      <div class="chips" id="chips" aria-label="Top companies"></div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="trk" hidden>
+    <div class="stats" id="stats"></div>
+    <div id="logs"></div>
+  </section>
+</div>
+
+<div class="modal" id="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt">
+    <h2 id="mt">Request a referral</h2>
+    <p class="role" id="ms"></p>
+    <div class="two">
+      <div><label for="pn">Your name</label><input id="pn" maxlength="40"></div>
+      <div><label for="pb">Your branch and batch</label><input id="pb" maxlength="40" placeholder="e.g. CSE, 2027"></div>
+      <div><label for="pk">Your key skills or projects</label><input id="pk" maxlength="90" placeholder="e.g. React, Node.js, a deadline planner app"></div>
+      <div><label for="pr">Role you are applying for</label><input id="pr" maxlength="50"></div>
+      <div><label for="pj">Job link (optional)</label><input id="pj" maxlength="200" placeholder="https://..."></div>
+      <div><label for="po">Tone</label><select id="po"><option value="friendly">Friendly</option><option value="formal">Formal</option><option value="short">Short and direct</option></select></div>
+    </div>
+    <label for="pm">Message (you can edit it)</label>
+    <textarea id="pm" rows="9"></textarea>
+    <div class="acts">
+      <button class="btn" id="copy">Copy message</button>
+      <button class="btn primary" id="mark">Mark as contacted</button>
+      <button class="btn" id="close">Close</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  // name, batch, branch, company, role, city, open to referrals, fun note
+  var RAW=[
+   ["Aarav Mehta",2019,"CSE","Google","Software Engineer","Bengaluru",1,"Backend, Search"],
+   ["Riya Sharma",2020,"CSE","Microsoft","Software Engineer","Hyderabad",1,"Azure DevOps"],
+   ["Kabir Singh",2018,"IT","Amazon","SDE II","Bengaluru",0,"Alexa team"],
+   ["Ananya Iyer",2021,"CSE","Flipkart","Frontend Engineer","Bengaluru",1,"React, performance"],
+   ["Dev Malhotra",2019,"ECE","Qualcomm","Embedded Engineer","Hyderabad",1,"Firmware"],
+   ["Sana Khan",2020,"IT","Razorpay","Software Engineer","Bengaluru",1,"Payments APIs"],
+   ["Rohan Gupta",2017,"CSE","Adobe","Senior Engineer","Noida",0,"Creative Cloud"],
+   ["Ishita Verma",2022,"CSE","Zomato","Data Analyst","Gurugram",1,"Growth analytics"],
+   ["Harsh Vardhan",2018,"MECH","Tata Motors","Design Engineer","Pune",1,"EV platform"],
+   ["Meera Nair",2021,"CSE","Atlassian","Software Engineer","Bengaluru",1,"Jira cloud"],
+   ["Tanvi Joshi",2020,"IT","Deloitte","Consultant","Mumbai",1,"Tech consulting"],
+   ["Arjun Rao",2019,"CSE","Goldman Sachs","Analyst","Bengaluru",0,"Strats"],
+   ["Pooja Bansal",2022,"ECE","Texas Instruments","Analog Design Engineer","Bengaluru",1,"Power ICs"],
+   ["Nikhil Arora",2018,"CSE","Amazon","Applied Scientist","Hyderabad",1,"Machine learning"],
+   ["Simran Kaur",2021,"IT","Microsoft","Program Manager","Hyderabad",1,"Teams product"],
+   ["Yash Kapoor",2020,"CSE","Google","ML Engineer","Bengaluru",1,"Speech models"],
+   ["Neha Pillai",2019,"CIVIL","L&T","Site Engineer","Chennai",1,"Infrastructure"],
+   ["Vivek Chauhan",2022,"CSE","TCS","Systems Engineer","Pune",1,"Digital team"],
+   ["Aditi Saxena",2021,"CSE","Swiggy","Product Manager","Bengaluru",0,"Instamart"],
+   ["Karan Bedi",2020,"ECE","Intel","Validation Engineer","Bengaluru",1,"SoC validation"],
+   ["Mansi Tiwari",2023,"IT","Infosys","Systems Engineer","Chennai",1,"Cloud practice"],
+   ["Sahil Dua",2019,"CSE","PhonePe","Software Engineer","Bengaluru",1,"Backend, scale"],
+   ["Kritika Menon",2022,"CSE","Salesforce","Associate Engineer","Hyderabad",1,"Platform"],
+   ["Lakshya Jain",2018,"MECH","Bosch","R&D Engineer","Bengaluru",0,"Mobility"]
+  ];
+  var A=RAW.map(function(r,i){return {id:"a"+i,name:r[0],batch:r[1],branch:r[2],company:r[3],role:r[4],city:r[5],open:!!r[6],note:r[7]}});
+  var KEY="alumni-atlas-v1",profile={name:"",branch:"",skills:""},log=[],cur=null;
+
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify({profile:profile,log:log}))}catch(e){}}
+  function load(){try{var r=JSON.parse(localStorage.getItem(KEY)||"null");if(r){profile=r.profile||profile;log=r.log||[]}}catch(e){}}
+  var tt;function toast(m){var t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(function(){t.hidden=true},2600)}
+  function uniq(k){var s={};A.forEach(function(a){s[a[k]]=1});return Object.keys(s).sort(function(x,y){return x>y?1:-1})}
+  function fill(id,label,vals,desc){
+    $(id).innerHTML='<option value="">'+label+'</option>'+vals.map(function(v){return '<option>'+esc(v)+'</option>'}).join("");
+  }
+  fill("fc","All companies",uniq("company"));fill("fr","All roles",uniq("role"));fill("fy","All cities",uniq("city"));
+  fill("fb","All branches",uniq("branch"));fill("fa","All batches",uniq("batch").reverse());
+
+  function topChips(){
+    var c={};A.forEach(function(a){c[a.company]=(c[a.company]||0)+1});
+    var top=Object.keys(c).sort(function(x,y){return c[y]-c[x]||(x>y?1:-1)}).slice(0,5);
+    $("chips").innerHTML=top.map(function(n){return '<button class="chip'+($("fc").value===n?" on":"")+'" data-co="'+esc(n)+'">'+esc(n)+' ('+c[n]+')</button>'}).join("");
+  }
+  function contacted(id){return log.some(function(l){return l.alumId===id})}
+
+  function renderDir(){
+    var q=$("q").value.trim().toLowerCase(),f={company:$("fc").value,role:$("fr").value,city:$("fy").value,branch:$("fb").value,batch:$("fa").value},o=$("fo").checked;
+    var L=A.filter(function(a){
+      if(o&&!a.open)return false;
+      for(var k in f){if(f[k]&&String(a[k])!==f[k])return false}
+      return !q||(a.name+" "+a.company+" "+a.role+" "+a.city+" "+a.note).toLowerCase().indexOf(q)>-1;
+    });
+    $("res").textContent=L.length+" of "+A.length+" alumni";
+    $("grid").innerHTML=L.length?L.map(function(a){
+      var ini=a.name.split(" ").map(function(w){return w[0]}).join("").slice(0,2);
+      return '<article class="card"><div class="top"><div class="av" aria-hidden="true">'+ini+'</div><div><h3>'+esc(a.name)+'</h3><div class="role">'+esc(a.role)+' at '+esc(a.company)+'</div></div></div>'+
+        '<div class="tags"><span class="tag">'+esc(a.city)+'</span><span class="tag">'+a.branch+' · '+a.batch+'</span><span class="tag">'+esc(a.note)+'</span>'+
+        (a.open?'<span class="tag open">Open to referrals</span>':'<span class="tag">Not taking requests</span>')+(contacted(a.id)?'<span class="tag done">Already contacted</span>':'')+'</div>'+
+        '<button class="btn primary" data-req="'+a.id+'">Request referral</button></article>';
+    }).join(""):'<div class="empty">No alumni match these filters. Try clearing a filter or searching a different company.</div>';
+    topChips();
+  }
+
+  var DAY=864e5,FOLLOW=5;
+  var ST=["Contacted","Replied","Referred","No response","Declined"];
+  function renderTrk(){
+    $("cnt").textContent=log.length;
+    var n=function(s){return log.filter(function(l){return l.status===s}).length};
+    var due=log.filter(function(l){return l.status==="Contacted"&&Date.now()-l.date>FOLLOW*DAY}).length;
+    $("stats").innerHTML='<div class="stat"><b>'+log.length+'</b><span>People contacted</span></div><div class="stat"><b>'+n("Replied")+'</b><span>Replied</span></div><div class="stat"><b>'+n("Referred")+'</b><span>Referrals got</span></div><div class="stat"><b style="color:var(--warn)">'+due+'</b><span>Need follow-up</span></div>';
+    $("logs").innerHTML=log.length?log.slice().sort(function(a,b){return b.date-a.date}).map(function(l){
+      var late=l.status==="Contacted"&&Date.now()-l.date>FOLLOW*DAY;
+      return '<div class="log"><div><h3>'+esc(l.name)+'</h3><div class="meta">'+esc(l.role)+' at '+esc(l.company)+'</div>'+
+        '<div class="meta">Contacted '+new Date(l.date).toLocaleDateString([], {day:"numeric",month:"short"})+(late?' · <span class="flag">Time to follow up</span>':'')+'</div></div>'+
+        '<select data-st="'+l.id+'" aria-label="Status">'+ST.map(function(s){return '<option'+(s===l.status?" selected":"")+'>'+s+'</option>'}).join("")+'</select>'+
+        '<input data-nt="'+l.id+'" value="'+esc(l.note||"")+'" maxlength="120" placeholder="Add a note" aria-label="Note">'+
+        '<div><button class="btn small" data-msg="'+l.id+'">Copy message</button> <button class="btn small" data-del="'+l.id+'">Remove</button></div></div>';
+    }).join(""):'<div class="empty">Nobody here yet. Request a referral from the Find alumni tab and mark it as contacted to track it.</div>';
+  }
+
+  function gen(a){
+    var first=a.name.split(" ")[0],me=$("pn").value.trim()||"[Your name]",br=$("pb").value.trim()||"[branch, batch]",
+      sk=$("pk").value.trim(),role=$("pr").value.trim()||"a role",job=$("pj").value.trim(),tone=$("po").value,
+      link=job?"\nHere is the opening: "+job:"",skl=sk?" I have been working on "+sk+".":"";
+    if(tone==="formal")return "Dear "+first+",\n\nI hope you are doing well. My name is "+me+", and I am a "+br+" student from our college. I came across your profile and saw that you work as "+a.role+" at "+a.company+".\n\nI am applying for "+role+" at "+a.company+"."+skl+" I would be grateful if you could refer me or guide me on the application process."+link+"\n\nI have attached my resume and would be happy to share anything else you need. Thank you for your time.\n\nSincerely,\n"+me;
+    if(tone==="short")return "Hi "+first+", I’m "+me+" ("+br+"). I’m applying for "+role+" at "+a.company+"."+skl+" Could you refer me if you’re comfortable? Resume attached."+(job?" Job link: "+job:"")+" Thanks a lot!";
+    return "Hi "+first+"!\n\nI’m "+me+" from "+br+" at our college. I found you while looking at alumni at "+a.company+" and loved seeing your journey into "+a.role+".\n\nI’m applying for "+role+" there."+skl+" Would you be open to referring me, or sharing any tips on what the team looks for?"+link+"\n\nI’ve attached my resume. No pressure at all, and thank you so much for reading this!\n\nBest,\n"+me;
+  }
+  function openModal(id){
+    cur=A.filter(function(a){return a.id===id})[0];
+    $("ms").textContent=cur.name+" · "+cur.role+" at "+cur.company+", "+cur.city;
+    $("pn").value=profile.name;$("pb").value=profile.branch;$("pk").value=profile.skills;
+    $("pr").value=cur.role;
+    $("pj").value="";$("pm").value=gen(cur);$("modal").hidden=false;$("pn").focus();
+  }
+  function closeModal(){$("modal").hidden=true;cur=null}
+  function copy(text){
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){toast("Message copied.")},function(){fallback(text)})}else fallback(text);
+  }
+  function fallback(t){var x=document.createElement("textarea");x.value=t;document.body.appendChild(x);x.select();try{document.execCommand("copy");toast("Message copied.")}catch(e){toast("Select the text and copy it manually.")}x.remove()}
+
+  ["pn","pb","pk","pr","pj","po"].forEach(function(i){$(i).addEventListener("input",function(){
+    if(cur){profile.name=$("pn").value;profile.branch=$("pb").value;profile.skills=$("pk").value;save();$("pm").value=gen(cur)}
+  })});
+  $("copy").onclick=function(){copy($("pm").value)};
+  $("close").onclick=closeModal;
+  $("modal").addEventListener("click",function(e){if(e.target===$("modal"))closeModal()});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("modal").hidden)closeModal()});
+  $("mark").onclick=function(){
+    if(!cur)return;
+    if(contacted(cur.id)){toast("You already contacted "+cur.name.split(" ")[0]+".");return}
+    log.push({id:uid(),alumId:cur.id,name:cur.name,company:cur.company,role:cur.role,date:Date.now(),status:"Contacted",note:"",msg:$("pm").value});
+    save();closeModal();renderDir();renderTrk();toast("Added to your tracker.");
+  };
+
+  document.addEventListener("click",function(e){
+    var x=e.target,d=x.dataset;
+    if(d.req)openModal(d.req);
+    if(d.co){$("fc").value=$("fc").value===d.co?"":d.co;renderDir()}
+    if(d.del){log=log.filter(function(l){return l.id!==d.del});save();renderDir();renderTrk()}
+    if(d.msg){var l=log.filter(function(z){return z.id===d.msg})[0];if(l)copy(l.msg)}
+  });
+  document.addEventListener("change",function(e){
+    var d=e.target.dataset;
+    if(d.st){log.forEach(function(l){if(l.id===d.st)l.status=e.target.value});save();renderTrk()}
+    if(d.nt){log.forEach(function(l){if(l.id===d.nt)l.note=e.target.value});save()}
+  });
+  ["q","fc","fr","fy","fb","fa","fo"].forEach(function(i){$(i).addEventListener("input",renderDir)});
+  $("clear").onclick=function(){["q","fc","fr","fy","fb","fa"].forEach(function(i){$(i).value=""});$("fo").checked=false;renderDir()};
+
+  function tab(t){
+    var d=t==="dir";$("dir").hidden=!d;$("trk").hidden=d;
+    $("t-dir").setAttribute("aria-selected",d);$("t-trk").setAttribute("aria-selected",!d);
+    if(!d)renderTrk();
+  }
+  $("t-dir").onclick=function(){tab("dir")};$("t-trk").onclick=function(){tab("trk")};
+  $("theme").onclick=function(){
+    var r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
+    r.dataset.theme=dark?"light":"dark";
+  };
+
+  load();renderDir();renderTrk();
+})();
+</script>
+</body>
+</html>
